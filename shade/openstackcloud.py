@@ -9391,13 +9391,14 @@ class OpenStackCloud(
         msg = ("Failed to query the API for validation status of "
                "node {node_id}").format(node_id=uuid)
         url = '/nodes/{node_id}/validate'.format(node_id=uuid)
-        ifaces = self._baremetal_client.get(url, error_message=msg)
+        validate_resp = self._baremetal_client.get(url, error_message=msg)
 
-        if not ifaces['deploy'] or not ifaces['power']:
+        if not validate_resp['deploy'] or not validate_resp['power']:
             raise OpenStackCloudException(
                 "ironic node %s failed to validate. "
-                "(deploy: %s, power: %s)" % (ifaces['deploy'],
-                                             ifaces['power']))
+                "(deploy: %s, power: %s)" % (validate_resp['deploy'],
+                                             validate_resp['power']))
+        return validate_resp
 
     def node_set_provision_state(self,
                                  name_or_id,
